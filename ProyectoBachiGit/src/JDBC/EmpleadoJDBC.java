@@ -9,6 +9,7 @@ import POJO.EmpleadoPOJO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -95,6 +96,31 @@ public class EmpleadoJDBC {
             Conexion.close(rs);
         } catch (Exception e) {
             System.out.println("Error al consultar " + e);
+        } finally {
+            Conexion.close(con);
+            Conexion.close(ps);
+        }
+        return modelo;
+    }
+
+    public static DefaultComboBoxModel cargarCombo() {
+        Connection con = null;
+        PreparedStatement ps = null;
+        DefaultComboBoxModel modelo = null;
+        try {
+            con = Conexion.getConnection();
+            ps = con.prepareStatement(SQL_QUERY);
+            modelo = new DefaultComboBoxModel();
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                EmpleadoPOJO pojo = new EmpleadoPOJO();
+                pojo.setId(rs.getInt("id"));
+                pojo.setNombre(rs.getString("nombre"));
+                modelo.addElement(pojo);
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error al cargar combo " + e);
         } finally {
             Conexion.close(con);
             Conexion.close(ps);
